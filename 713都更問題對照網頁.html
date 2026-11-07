@@ -1,0 +1,541 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>713都更提問對照表</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+    /* Layout: a two-column ledger — plain-language on the left, contract-language on the right, one row per issue, severity as a left stripe. */
+    :root {
+        --bg: #e4e5e7;
+        --surface: #f2f2f3;
+        --fg: #1f2023;
+        --muted: #5f6166;
+        --line: #cfd0d3;
+        --accent: #4a4d52;
+        --accent-soft: #dcdde0;
+        --high: #b3261e;
+        --high-soft: #fbe9e7;
+        --mid: #b26a00;
+        --mid-soft: #fdf1df;
+        --low: #5f6b2b;
+        --low-soft: #eef1e0;
+        --quote: #e6e7e9;
+        --display: "Noto Serif TC", "Songti TC", serif;
+        --body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+        --mono: "IBM Plex Mono", ui-monospace, monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+            --bg: #1e1f21;
+            --surface: #2a2b2e;
+            --fg: #e6e6e8;
+            --muted: #a0a2a7;
+            --line: #3a3c40;
+            --accent: #b8bbc0;
+            --accent-soft: #34363a;
+            --high: #ff8a80;
+            --high-soft: #3a1f1d;
+            --mid: #f2b45a;
+            --mid-soft: #352a17;
+            --low: #b9c97a;
+            --low-soft: #262c19;
+            --quote: #333539;
+            color-scheme: dark
+        }
+    }
+
+    :root[data-theme="dark"] {
+        --bg: #1e1f21;
+        --surface: #2a2b2e;
+        --fg: #e6e6e8;
+        --muted: #a0a2a7;
+        --line: #3a3c40;
+        --accent: #b8bbc0;
+        --accent-soft: #34363a;
+        --high: #ff8a80;
+        --high-soft: #3a1f1d;
+        --mid: #f2b45a;
+        --mid-soft: #352a17;
+        --low: #b9c97a;
+        --low-soft: #262c19;
+        --quote: #333539;
+        color-scheme: dark
+    }
+
+    * {
+        box-sizing: border-box
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--body);
+        font-size: 16px;
+        line-height: 1.7
+    }
+
+    .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+        padding-block: 28px 64px
+    }
+
+    header h1 {
+        font-family: var(--display);
+        font-size: clamp(1.6rem, 4vw, 2.2rem);
+        margin: 0 0 6px;
+        text-wrap: balance;
+        letter-spacing: .02em
+    }
+
+    header p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 68ch
+    }
+
+    .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        margin-top: 14px;
+        font-size: .9rem;
+        color: var(--muted)
+    }
+
+    .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%
+    }
+
+    .dot.H {
+        background: var(--high)
+    }
+
+    .dot.M {
+        background: var(--mid)
+    }
+
+    .dot.L {
+        background: var(--low)
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0 0 auto;
+        height: env(safe-area-inset-top, 0px);
+        z-index: 10;
+        background: var(--bg)
+    }
+
+    .bar {
+        position: sticky;
+        top: env(safe-area-inset-top, 0px);
+        z-index: 5;
+        background: var(--bg);
+        border-bottom: 1px solid var(--line);
+        margin-top: 20px;
+        padding-block: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center
+    }
+
+    .group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px
+    }
+
+    .chip {
+        font: inherit;
+        font-size: .9rem;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--fg);
+        padding: 5px 12px;
+        border-radius: 999px;
+        cursor: pointer
+    }
+
+    .chip[aria-pressed="true"] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--bg)
+    }
+
+    .chip:focus-visible,
+    .copy:focus-visible,
+    input:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px
+    }
+
+    .bar input {
+        font: inherit;
+        font-size: .95rem;
+        flex: 1 1 180px;
+        min-width: 0;
+        padding: 6px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--fg)
+    }
+
+    .count {
+        font-size: .85rem;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums
+    }
+
+    .colhead {
+        display: grid;
+        grid-template-columns: 88px 1fr 1fr;
+        gap: 20px;
+        margin-top: 18px;
+        font-size: .8rem;
+        letter-spacing: .12em;
+        color: var(--muted)
+    }
+
+    .section {
+        font-family: var(--display);
+        font-size: 1.15rem;
+        margin: 30px 0 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px
+    }
+
+    .item {
+        display: grid;
+        grid-template-columns: 88px 1fr 1fr;
+        gap: 20px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--c);
+        border-radius: 6px;
+        padding: 18px 20px;
+        margin-bottom: 12px
+    }
+
+    .item.H {
+        --c: var(--high);
+        --cs: var(--high-soft)
+    }
+
+    .item.M {
+        --c: var(--mid);
+        --cs: var(--mid-soft)
+    }
+
+    .item.L {
+        --c: var(--low);
+        --cs: var(--low-soft)
+    }
+
+    .meta {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: flex-start
+    }
+
+    .id {
+        font-family: var(--mono);
+        font-weight: 500;
+        font-size: 1.05rem;
+        background: var(--cs);
+        color: var(--c);
+        padding: 2px 8px;
+        border-radius: 4px
+    }
+
+    .type {
+        font-size: .78rem;
+        color: var(--muted);
+        line-height: 1.4
+    }
+
+    .col {
+        min-width: 0
+    }
+
+    .col h3 {
+        font-size: 1.02rem;
+        margin: 0 0 8px;
+        line-height: 1.5;
+        text-wrap: balance
+    }
+
+    .col .tag {
+        display: none;
+        font-size: .75rem;
+        letter-spacing: .1em;
+        color: var(--muted);
+        margin-bottom: 4px
+    }
+
+    .col ul {
+        padding-left: 1.2em;
+        margin: .3em 0
+    }
+
+    .col li {
+        margin: .2em 0
+    }
+
+    .col p {
+        margin: .4em 0
+    }
+
+    .col blockquote {
+        margin: .5em 0;
+        padding: 10px 12px 10px 14px;
+        background: var(--quote);
+        border-left: 3px solid var(--accent);
+        border-radius: 4px;
+        position: relative
+    }
+
+    .col blockquote p {
+        margin: 0;
+        padding-right: 52px
+    }
+
+    .copy {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font: inherit;
+        font-size: .75rem;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--accent);
+        border-radius: 4px;
+        padding: 2px 8px;
+        cursor: pointer
+    }
+
+    .src {
+        font-size: .82rem;
+        color: var(--muted);
+        margin-top: 10px;
+        border-top: 1px dashed var(--line);
+        padding-top: 8px
+    }
+
+    .col table {
+        border-collapse: collapse;
+        font-size: .9rem
+    }
+
+    .col td,
+    .col th {
+        border: 1px solid var(--line);
+        padding: 4px 8px
+    }
+
+    body.only-plain .pro,
+    body.only-pro .plain {
+        display: none
+    }
+
+    body.only-plain .item,
+    body.only-pro .item,
+    body.only-plain .colhead,
+    body.only-pro .colhead {
+        grid-template-columns: 88px 1fr
+    }
+
+    body.only-plain .colhead .pro,
+    body.only-pro .colhead .plain {
+        display: none
+    }
+
+    .empty {
+        color: var(--muted);
+        padding: 24px 0
+    }
+
+    footer {
+        margin-top: 40px;
+        font-size: .85rem;
+        color: var(--muted);
+        max-width: 72ch
+    }
+
+    @media (max-width:760px) {
+        .colhead {
+            display: none
+        }
+
+        .item,
+        body.only-plain .item,
+        body.only-pro .item {
+            grid-template-columns: 1fr;
+            gap: 14px
+        }
+
+        .meta {
+            flex-direction: row;
+            align-items: center;
+            gap: 10px
+        }
+
+        .col .tag {
+            display: block
+        }
+
+        .col.pro {
+            border-top: 1px dashed var(--line);
+            padding-top: 12px
+        }
+
+        .bar {
+            position: static;
+            gap: 8px
+        }
+
+        .bar input {
+            flex-basis: 100%
+        }
+
+        .chip {
+            padding: 4px 11px;
+            font-size: .88rem
+        }
+
+        .item {
+            padding: 14px 14px 14px 12px
+        }
+
+        .col ul {
+            padding-left: 1em
+        }
+
+        .col li>blockquote,
+        .col blockquote {
+            margin-left: -0.6em;
+            margin-right: 0
+        }
+
+        .col blockquote p {
+            padding-right: 0;
+            padding-top: 26px
+        }
+
+        body {
+            font-size: 15.5px
+        }
+    }
+
+    @media (prefers-reduced-motion:no-preference) {
+        .chip {
+            transition: background .15s
+        }
+    }
+</style>
+
+<div class="wrap">
+    <header>
+        <h1>713都更 提問對照表</h1>
+        <p>台北市信義區福德段二小段713地號都更案。每一列是同一個問題：左邊是白話版，右邊是專業版（含契約條號與法條出處）。依嚴重程度分區，「可以這樣問」的句子可以直接複製。</p>
+        <div class="legend">
+            <span><i class="dot H"></i>高：簽約前一定要問清楚</span>
+            <span><i class="dot M"></i>中：很重要，要問</span>
+            <span><i class="dot L"></i>低：順便確認</span>
+        </div>
+    </header>
+
+    <div class="bar" role="toolbar" aria-label="篩選與檢視">
+        <div class="group" id="sevGroup">
+            <button class="chip" id="sev-all" data-sev="all" aria-pressed="true">全部</button>
+            <button class="chip" id="sev-H" data-sev="H" aria-pressed="false">高</button>
+            <button class="chip" id="sev-M" data-sev="M" aria-pressed="false">中</button>
+            <button class="chip" id="sev-L" data-sev="L" aria-pressed="false">低</button>
+        </div>
+        <div class="group" id="viewGroup">
+            <button class="chip" id="view-both" data-view="both" aria-pressed="true">並排</button>
+            <button class="chip" id="view-plain" data-view="plain" aria-pressed="false">只看白話</button>
+            <button class="chip" id="view-pro" data-view="pro" aria-pressed="false">只看專業</button>
+        </div>
+        <input id="q" type="search" placeholder="搜尋關鍵字，例如：車位、印章、租金" aria-label="搜尋">
+        <span class="count" id="count"></span>
+    </div>
+
+    <div class="colhead" aria-hidden="true"><span>編號</span><span class="plain">白話版</span><span
+            class="pro">專業版（出處、法條）</span></div>
+    <main id="list"></main>
+
+    <footer>
+        依據：《1150314廣慈713 模擬選屋說明會》簡報、土地合建契約書（1140711更新版樣本）、授權書、都市更新條例、都市更新權利變換實施辦法、民法。整理日期
+        2026-11-07。本頁是整理與提問建議，不是法律意見；標「高」的項目，建議由自己委任的律師審閱後再簽。
+    </footer>
+</div>
+
+<script>
+    const DATA = [{ "id": "H1", "sev": "H", "type": "法律／授權", "src": "授權書", "plainTitle": "授權書權限太大，連「賣房子」都包含在內", "proTitle": "授權書含出賣、抵押、贈與的特別代理權", "plain": "<ul>\n<li><strong>白話說明</strong>：那張授權書不只讓別人幫你辦都更，還讓他可以幫你<strong>賣房子、拿房子去抵押借錢、把房子送人</strong>。</li>\n<li><strong>比喻</strong>：像是請人幫你繳水電費，結果給他的卻是你的存摺、印章和提款卡密碼。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「辦都更為什麼需要賣房子、抵押、送人的權限？請把這部分刪掉，只寫辦理這次都更用。如果我自己去簽約，是不是就不用簽這張？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【授權書】授權事項欄</li>\n<li><strong>原文重點</strong>：被授權人「除有為一切必要行為之權外，並有民法第533條、第534條但書所列各行為之特別代理權」。</li>\n<li><strong>為什麼是問題</strong>：</li>\n<li>民法第534條但書列的是：不動產出賣或設定負擔、租期超過兩年的租賃、贈與、和解、起訴、提付仲裁。</li>\n<li>簽了這張授權書，被授權人在法律上可以替你賣房子、設定抵押或贈與，遠超過辦理都更所需。</li>\n<li>授權書沒有期限、沒有撤回方式，也沒有限定只用於本都更案；被授權人欄位是空白的。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「授權書為什麼需要民法第534條但書的特別代理權？辦理都更並不需要出賣、設定負擔或贈與的權限。請刪除這段，改寫為『僅限本都更案相關文件之簽署，不得出售、設定負擔、贈與、和解或起訴』，並加上授權期限與可書面撤回的條款。如果地主本人親自簽約，是否就不需要簽這份授權書？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "H2", "sev": "H", "type": "法律／權利", "src": "契約第7條第3項", "plainTitle": "合約規定：我們不能對都更計畫提出反對意見", "proTitle": "地主不得在審議中提出任何異議", "plain": "<ul>\n<li><strong>白話說明</strong>：合約寫，市政府審查期間，我們<strong>不能提出任何反對或意見</strong>，不然就算違約。</li>\n<li><strong>為什麼要擔心</strong>：法律本來保障地主可以提意見、可以說「這個分配對我不公平」。簽了這條，等於先把這個權利讓出去。如果到時候發現分到的比說好的少，也不能抗議。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「如果之後政府公告的分配內容比現在說的少，我們可以提出意見嗎？能不能刪掉這條，或寫明『不影響地主依法提意見的權利』？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第7條第3項</li>\n<li><strong>原文重點</strong>：甲方「不得於本合建大樓辦理都市更新審議之審議會或行政審核程序中提出任何異議或任何方式阻饒都市更新程序之進行」，否則違約。</li>\n<li><strong>為什麼是問題</strong>：</li>\n<li>《都市更新條例》保障所有權人的權利，包括：第32條公開展覽期間提出意見、第33條聽證、第37條第3項（分配比率低於簽同意書時可撤銷同意）、第53條權利價值異議。</li>\n<li>這一條讓地主在發現計畫內容對自己不利時，一提異議就構成違約，可能連帶觸發H3的懲罰性違約金。</li>\n<li>契約條款能否限制這些法定權利，需律師判斷。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「第7條第3項是否能刪除？如果不能，請明確寫出『不影響地主依都市更新條例第32條、第33條、第37條、第53條所享有之陳述意見、撤銷同意及異議權利』。另外，如果公開展覽的分配比率低於簽約時的說明，地主可以撤銷同意而不算違約嗎？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "H3", "sev": "H", "type": "法律／違約", "src": "契約第18條第2項", "plainTitle": "違約的代價是「整間房子」", "proTitle": "以自己的合建房地作為懲罰性違約金", "plain": "<ul>\n<li><strong>白話說明</strong>：簽約後如果又跟別的建商簽約，或把房子賣掉，合約寫要<strong>把整間房子賠給實施者</strong>。</li>\n<li><strong>比喻</strong>：像租約寫「提早退租，押金不退，房子也歸房東」。</li>\n<li><strong>為什麼要擔心</strong>：如果家裡哪天急需用錢要賣房，可能被認為違約。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「違約金可以改成一個固定的金額上限嗎？如果家裡需要賣房，只要買的人願意接著參加都更，算不算違約？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第18條第2項</li>\n<li><strong>原文重點</strong>：簽約後若另與第三人簽合建、委建、買賣或都更同意書，視為重大違約，「以參與本約之合建房地作為懲罰性違約金給付予乙方」。</li>\n<li><strong>為什麼是問題</strong>：</li>\n<li>違約的代價是整個房地，金額可能上千萬，與一般違約金相比極不相當。</li>\n<li>「買賣契約」也在範圍內：簽約後若家中需要出售房屋，可能被解讀為違約。</li>\n<li>對照實施者違約（第18條第3項）只有解約與接收工程，沒有等量的懲罰。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「第18條第2項的懲罰性違約金能否改為明確的金額上限（例如實施者已投入費用的合理比例）？另外，簽約後地主如果因家庭需要出售房屋，只要買方承受本契約，是否就不算違約？請寫入契約。」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "H4", "sev": "H", "type": "分配／價值", "src": "契約第3條", "plainTitle": "我們到底能分回多大的房子？沒有人給過答案", "proTitle": "分回坪數與比例沒有個人試算；「可分回建物坪數」定義不清", "plain": "<ul>\n<li><strong>白話說明</strong>：合約只寫了計算公式，<strong>沒有算出我們家實際能分到幾坪、值多少錢</strong>。</li>\n<li><strong>為什麼要擔心</strong>：用我們家的土地粗估，新房子大約 <strong>23～34 坪</strong>（含公設），可能比現在的 37.5 坪小，而且新大樓公設多，室內實際能用的空間會更小。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「請用我家的權狀資料，書面算給我看：能分回幾坪（含公設和不含公設）、值多少錢、大概可以選到哪幾樓。」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第3條第2、3項；【簡報】p.64～68（只有一個29.89坪的範例）</li>\n<li><strong>為什麼是問題</strong>：</li>\n<li>契約只有公式（基準容積62%、獎勵50%），沒有本案的地主整體分回比例，也沒有個人數字。</li>\n<li>「可分回建物坪數」是容積樓地板還是含公設的權狀坪，契約沒寫清楚，兩者差三到五成。</li>\n<li>依本戶土地持分11.4坪粗估：容積樓地板約16～22坪，換算權狀約23～34坪（假設，見專案文件04），可能比現有約37.5坪小。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「請依我家謄本（土地持分11.4坪、建物約37.5坪、二樓）提供書面個人試算，包括：可分回容積樓地板坪數、對應的權狀坪數、權利價值，以及這個權值大約可以選到哪些樓層與戶型。契約第3條的『可分回建物坪數』是指容積樓地板還是權狀面積？本案預計申請多少獎勵容積和免計容積？全案地主整體分回比例是多少？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "H5", "sev": "H", "type": "法律／授權", "src": "契約第12條、附件二", "plainTitle": "印章交給實施者保管，而且收不回來", "proTitle": "代刻印章不得撤回，用印範圍可擴大", "plain": "<ul>\n<li><strong>白話說明</strong>：合約要我們讓實施者<strong>代刻一顆我們的印章，由他們保管</strong>，而且<strong>不能反悔收回</strong>。用途很廣，包括土地分割、合併。</li>\n<li><strong>比喻</strong>：像把家裡鑰匙交給裝潢公司，而且說好裝潢結束前你都不能換鎖。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「每次用我的印章之前，能不能先通知我、給我用印紀錄？如果都更沒成功，印章什麼時候還我或銷毀？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第12條；附件二〈代刻印章委託書〉</li>\n<li><strong>原文重點</strong>：甲方委託乙方代刻並保管印章，「不得任意終止或撤回」；用途包括都更申辦、拆照、建照、使照、土地分割合併、道路捐贈、公有地併購、第一次登記等，且「如因同街廓開發之需增加、減少或分割本地段土地，則列入可用印之範圍」。</li>\n<li><strong>為什麼是問題</strong>：</li>\n<li>實施者在多年內持有可代表你用印的印章，而你無法撤回。</li>\n<li>範圍包含土地分割、合併與基地範圍的增減，地主可能在不知情下被用印。</li>\n<li>雖然有「超出範圍以偽造文書論」，但事後追究比事前控制困難。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「代刻印章能否改為每次用印前書面通知地主，並提供用印紀錄？『同街廓增減分割土地』的用印範圍能否刪除或改為須地主另行書面同意？如果契約依第24條失效或解除，印章何時、如何返還或銷毀？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "H6", "sev": "H", "type": "時程／保障", "src": "契約第7條第2項、第11條", "plainTitle": "東西先交出去，保障要好幾年後才開始", "proTitle": "簽約即交同意書與印章，信託要等事業計畫核定後", "plain": "<ul>\n<li><strong>白話說明</strong>：一簽約就要交出同意書和印章，但把土地交給銀行保管（信託）這個保障，要等<strong>政府核准計畫後</strong>才會做，可能是 <strong>2～4 年後</strong>。</li>\n<li><strong>比喻</strong>：像先付全額訂金，但履約保證要等兩年後才開始。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「簽約到信託之前這幾年，我們的土地、印章有什麼保障？信託是哪家銀行？可以先給我們看信託合約的草稿嗎？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第7條第2項、第11條第1項、第12條；【簡報】p.39（核定約需2～4年）</li>\n<li><strong>為什麼是問題</strong>：</li>\n<li>簽約當下就要交出各階段都更同意書與印章，但土地信託要等事業計畫核定後才辦。</li>\n<li>這段期間可能長達數年，地主的保障主要只靠契約本身。</li>\n<li>信託的受託銀行是「乙方指定」，簡報提到的中國建築經理公司在契約中沒有寫明角色。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「從簽約到事業計畫核定、辦理信託之前，地主的土地、同意書與印章有什麼保障？信託受託銀行是哪一家？中國建築經理公司在本案擔任什麼角色、由誰委任、費用由誰支付？能否提供信託契約草稿，並確認內容包含第11條所說的『未完工程處理機制』？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "M1", "sev": "M", "type": "法律／違約", "src": "契約第7條第4項、第10條", "plainTitle": "罰則不公平", "proTitle": "罰則不對等", "plain": "<ul>\n<li><strong>白話說明</strong>：我們晚搬家，<strong>每天罰 5 萬元</strong>；實施者晚蓋好，每天賠的錢少很多。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「如果你們晚交屋一天，我們家實際可以拿到多少賠償？兩邊的罰則可以一樣嗎？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第7條第4項、第14條第8項、第10條</li>\n<li><strong>為什麼是問題</strong>：</li>\n<li>地主接到搬遷通知後120日內未點交，每逾一日罰5萬元，逾30日視為違約；代墊稅費未歸墊，每日1萬元。</li>\n<li>實施者逾期完工，每日只賠「建照法定工程造價×萬分之一×地主土地占比」，實際金額可能遠低於地主的罰則。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「請依本案預估工程造價，試算實施者逾期一天，我家（土地持分11.4坪）實際能拿到多少遲延賠償？能否把雙方罰則調整為對等，或在逾期期間另加計租金補貼？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "M2", "sev": "M", "type": "分配／價值", "src": "契約第4條第1項", "plainTitle": "新房子的價格由實施者自己決定", "proTitle": "選屋價格由實施者訂定", "plain": "<ul>\n<li><strong>白話說明</strong>：選屋時每間新房子賣多少錢，合約寫<strong>由實施者決定</strong>。價格越高，我們的權值能換到的坪數就越小。</li>\n<li><strong>比喻</strong>：像拿禮券去買東西，但店家可以自己決定標價。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「選屋的價格可以改成用政府審查通過的價格嗎？如果價格之後有改，可以重選嗎？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第4條第1項：「選屋價格雙方同意由乙方訂定」</li>\n<li><strong>為什麼是問題</strong>：各戶價格決定了同樣的權值能換到多大、哪一層的房子。價格由實施者單方決定，會直接影響地主分到的面積。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「選屋價格能否改為以審議會核定的權利變換計畫價格為準？如果模擬選屋價格和最後核定價格不同，地主可以重新選屋嗎？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "M3", "sev": "M", "type": "程序", "src": "契約第4條第3～7項", "plainTitle": "沒到場選屋，別人幫你抽，而且不能反對", "proTitle": "見證律師由實施者指定，可代抽且不得異議", "plain": "<ul>\n<li><strong>白話說明</strong>：選屋那天沒去、或中途離開，就由<strong>實施者找的律師</strong>幫你抽房子，抽到哪間就是哪間，<strong>不能反對</strong>。</li>\n<li><strong>為什麼要擔心</strong>：家人如果在國外或當天沒空，就可能被分到不想要的房子。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「沒辦法到場的人，可以用書面、視訊或請家人代理選嗎？見證律師可以由地主一起決定嗎？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第4條第3～7項</li>\n<li><strong>為什麼是問題</strong>：</li>\n<li>未在期間內選屋、未出席或中途離席的地主，由「乙方指定之見證律師」依預估權值代抽，視為本人所為，「抽籤結果甲方絕無異議」。</li>\n<li>接到通知10日內未簽分配位置申請書，就照代選結果分配。</li>\n<li>人在國外或無法出席的地主特別容易受影響。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「見證律師能否由地主與實施者共同指定，或由地主代表推派？無法出席的地主能否以書面或視訊方式選屋、委託家人代理？代選後的10日期限能否延長，並提供更換選屋的機會？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "M4", "sev": "M", "type": "程序", "src": "簡報p.57；條例第50條", "plainTitle": "估價師應該讓地主一起決定", "proTitle": "估價師選任未提「與地主共同指定」", "plain": "<ul>\n<li><strong>白話說明</strong>：估價師決定我們的房子值多少。法律規定，原則上要由<strong>地主和實施者一起選估價師</strong>，但簡報只寫實施者指定一家、其他兩家用抽的。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「你們會先讓地主一起選估價師嗎？抽籤會事先通知我們、讓我們到場嗎？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【簡報】p.57（實施者指定一家、另兩家公開隨機抽選）；【法規】都市更新條例第50條、權利變換實施辦法第6～7條</li>\n<li><strong>為什麼是問題</strong>：法規原則上要求估價者由實施者與土地所有權人「共同指定」，無法共同指定時才由實施者指定一家、另兩家從主管機關名單抽選。簡報只寫了後者。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「本案是否會先依都市更新條例第50條，邀請全體地主共同指定估價者？選任抽籤的時間、地點會在十天前通知全體地主嗎？會有公正第三人見證嗎？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "M5", "sev": "M", "type": "分配／價值", "src": "簡報p.59；契約第3條第4項、第25條", "plainTitle": "簡報說「一戶一車位」，合約卻沒寫", "proTitle": "「一戶一車」沒有寫進契約", "plain": "<ul>\n<li><strong>白話說明</strong>：說明會講「原則上一戶一個車位」，但<strong>合約裡沒有這句話</strong>。合約只保障 114 年 6 月 30 日前簽約、而且符合條件的人有 B4 車位。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「一戶一車位可以寫進合約嗎？我們家的權值夠不夠換一個車位？不夠的話要補多少錢？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【簡報】p.59（「依原門牌一戶一車，選填一戶一車為原則」）；【契約】第3條第4項、第25條</li>\n<li><strong>為什麼是問題</strong>：</li>\n<li>契約是依土地面積占比×50%分配車位價值，地下室每層只有50%車位供地主選。</li>\n<li>只有「114/06/30前簽約、持有一個合法門牌、更新後車位權值≥0.8車」的地主才保障B4車位一席。</li>\n<li>簡報的說法沒有出現在契約中。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「簡報說『一戶一車為原則』，契約為什麼沒有寫？我家的車位權值預估是幾車？如果不足一車，是要補差價還是無法分配？114/06/30以後簽約的地主，車位如何保障？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "M6", "sev": "M", "type": "分配／價值", "src": "契約第5條；簡報p.63", "plainTitle": "想選大一點的房子，超過的部分要用比較貴的價格補錢", "proTitle": "超選以實施者預售屋底價計，施工期間繳清", "plain": "<ul>\n<li><strong>白話說明</strong>：選的房子如果比我們的權值多超過 5%，超過的部分要用<strong>實施者的預售屋價格</strong>算，而且是<strong>蓋房子期間就要繳</strong>，不是完工時。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「預售屋價格什麼時候會知道？大概比一般價格貴多少？補的錢可以分期嗎？錢會放在銀行信託帳戶裡嗎？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第5條；【簡報】p.63、p.66～68</li>\n<li><strong>為什麼是問題</strong>：</li>\n<li>選屋超過權值5%的部分，依「乙方預售屋之底價扣除代銷佣金」計算，而且要在施工期間繳清，不是完工時。</li>\n<li>底價由實施者決定，地主無法事先知道。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「預售屋底價何時公布、如何決定？會比估價師單價高多少？超選款項的繳款時程與分期方式是什麼？款項會存入信託專戶嗎？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "M7", "sev": "M", "type": "分配／價值", "src": "契約第3條第10項", "plainTitle": "「兩種方案選比較好的」，但有限制", "proTitle": "擇優條款的權值由實施者計算，且只能全選一種", "plain": "<ul>\n<li><strong>白話說明</strong>：合約說我們可以在「協議合建」和「權利變換」中選較好的，但：</li>\n<li>另一種方案的數字是<strong>實施者算的</strong>。</li>\n<li>只能<strong>整套選一種</strong>，不能這項選 A、那項選 B。</li>\n<li>如果改選權利變換，<strong>已經領的租金補貼要在 7 天內全部還回去</strong>。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「兩種方案的比較數字什麼時候給我們？是用政府審查過的數字嗎？如果改選權利變換，那邊也會有租金補貼嗎？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第3條第10項；【簡報】p.43</li>\n<li><strong>為什麼是問題</strong>：</li>\n<li>權利變換的權值由乙方計算，再由地主比較。</li>\n<li>地主只能「全部」選協議合建或「全部」選權利變換，不能分項選較有利的部分。</li>\n<li>改選權變後，已領的搬遷費、租金等要在7日內一次全部退還。</li>\n<li>協議合建者未達80%時，全案改為權利變換。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「擇優比較所用的權變權值，是以審議會核定的權利變換計畫為準嗎？什麼時候讓地主比較與選擇？改選權變時，已領的租金補貼要全部退還，權變計畫裡會有相對應的拆遷安置費嗎？金額大約多少？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "M8", "sev": "M", "type": "分配／價值", "src": "契約第3條第2項", "plainTitle": "政府多給的容積，我們只分一半", "proTitle": "獎勵容積只分50%，獎勵比例未知", "plain": "<ul>\n<li><strong>白話說明</strong>：原本能蓋的部分，我們分 62%；政府額外獎勵多蓋的部分，我們<strong>只分 50%</strong>。獎勵越多，我們占整棟的比例反而越低。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「這個案子預計會拿到多少獎勵？最後我們地主總共分到整棟的幾成？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第3條第2項</li>\n<li><strong>為什麼是問題</strong>：基準容積地主分62%，獎勵容積只分50%。獎勵越多，地主整體分回比例越被稀釋；本案預計申請多少獎勵也沒有揭露。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「本案預計申請哪些獎勵項目、合計多少比例？包含容積移轉在內，最後全案地主的整體分回比例預估是多少？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "M9", "sev": "M", "type": "法律／責任", "src": "契約前言、簽署頁", "plainTitle": "出錢的公司（聖得福）有沒有責任？", "proTitle": "出資者聖得福對地主的責任不明", "plain": "<ul>\n<li><strong>白話說明</strong>：聖得福有在合約上簽名，但合約裡<strong>幾乎沒寫他們要負什麼責任</strong>。萬一出錢的一方出問題，我們能不能找他們？</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「聖得福對我們地主負什麼責任？可以寫明和皇昌一起負責嗎？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】前言、簽署頁</li>\n<li><strong>為什麼是問題</strong>：聖得福列為「出資者」並簽名，但契約條文的權利義務主要是「甲乙雙方」，出資者幾乎沒有直接義務。若資金出問題，地主能否向聖得福求償不清楚。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「聖得福建設作為出資者，對地主負什麼責任？是否與皇昌營造負連帶責任？能否在契約中寫明？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "M10", "sev": "M", "type": "時程／保障", "src": "契約第19條", "plainTitle": "法律一改，條件可能跟著改", "proTitle": "法令變動時實施者可要求變更條件，否則解約", "plain": "<ul>\n<li><strong>白話說明</strong>：如果政府法規改變，實施者可以要求<strong>重新談條件</strong>，談不攏合約就解除。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「什麼情況下會重新談？如果合約解除，我們交出去的文件和印章怎麼處理？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第19條</li>\n<li><strong>為什麼是問題</strong>：因法令、容積率、防災型都更獎勵變動等原因，實施者可要求協議變更合作條件，協議不成契約解除。虛坪改革等變動正在進行，可能觸發這一條。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「第19條在什麼具體情況下會啟動？如果因此解約，地主已交付的同意書、印章、文件如何處理？實施者需要賠償或撤回已送件的申請嗎？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "M11", "sev": "M", "type": "建築／產品", "src": "契約第20條第5項", "plainTitle": "建材「保證一樣」，但最後以實施者說了算", "proTitle": "建材以實施者日後銷售合約為準", "plain": "<ul>\n<li><strong>白話說明</strong>：合約附了一份建材清單，說一定照做；但下一句又說，如果不一樣，<strong>以實施者之後賣房子的合約為準</strong>。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「可以改成『建材不可以比這份清單差』嗎？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第20條第5項；附件八註記</li>\n<li><strong>為什麼是問題</strong>：條文說建材表與實際「必為一致」，但緊接著說「如有差異處，以日後乙方對外銷售合約之建材設備說明為準」，等於最後以實施者日後的版本為準。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「能否改為『實際建材不得低於附件八所列規格與品牌』？如果日後銷售合約的建材比附件八好，地主分回的房屋是否比照？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "M12", "sev": "M", "type": "資訊正確性", "src": "簡報p.4～6", "plainTitle": "「虛坪改革會讓你少 500 萬」，這個說法要查證", "proTitle": "虛坪改革「權狀打9折、115.7.1施行」說法", "plain": "<ul>\n<li><strong>白話說明</strong>：簡報說政府新制會讓權狀坪數打 9 折、損失 500 萬，催大家快簽。但新聞報導的新制方向是<strong>把不合理的公設改算到室內</strong>，總面積不一定變少；而且我們查不到簡報說的「115 年 7 月 1 日上路」的官方公告。</li>\n<li><strong>可以這樣問</strong>：<blockquote>\n<p>「這個新制的官方公告在哪裡？我們這案適用新制還是舊制？新制會讓我們的室內空間變小嗎？」</p>\n</blockquote>\n</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【簡報】p.4～6</li>\n<li><strong>為什麼是問題</strong>：</li>\n<li>依工商時報（2025/12/26）與今周刊（2026/01/22）報導，改革方向是把電梯、管委會空間等改列免計容積，讓虛坪轉為專有面積、總面積不變，並非單純讓地主權狀縮水。</li>\n<li>截至2026/11/07未查到「115.7.1施行」的官方正式公告。</li>\n<li>簡報以「損失500萬」舉例，可能讓地主急於簽約。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「簡報所說『115.7.1施行』的官方公告或發文字號是什麼？本案是否已報核、適用舊制還是新制？若適用新制，地主的室內實際面積會減少嗎？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "L1", "sev": "L", "type": "資訊正確性", "src": "簡報p.38；契約第1條", "plainTitle": "基地大小前後不一樣", "proTitle": "基地面積簡報與契約差約201坪", "plain": "<ul>\n<li><strong>白話說明</strong>：簡報寫 1,080 坪，合約寫 1,282 坪，差了 200 坪。可能是一個有算道路、一個沒算。</li>\n<li><strong>可以這樣問</strong>：「兩個數字為什麼不一樣？分房子用的是哪一個？」</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【簡報】p.38（1,080.83坪）；【契約】第1條（47筆、4,238㎡、約1,281.99坪）</li>\n<li><strong>為什麼是問題</strong>：差距可能是道路用地，但影響分回與容積計算的基礎，需確認。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「簡報1,080.83坪與契約1,281.99坪的差異是什麼？差的部分是道路用地嗎？分配計算用的是哪一個數字？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "L2", "sev": "L", "type": "資訊正確性", "src": "簡報p.50、p.65～68", "plainTitle": "房型坪數前後不一樣", "proTitle": "戶型坪數前後不一致", "plain": "<ul>\n<li><strong>白話說明</strong>：簡報前面介紹的房型坪數，和後面選屋範例的坪數對不起來。</li>\n<li><strong>可以這樣問</strong>：「哪一份是最新的？我們 B 區有哪些房型、各幾坪？」</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【簡報】p.50（A1=25坪、A3=23坪等）；p.65～68範例表（A1=30.27坪、A2=17.36坪、A3=30.98坪、A7=29.22坪）</li>\n<li><strong>為什麼是問題</strong>：同一份簡報的同名戶型坪數不同，範例表還出現戶型頁沒有的A7，選屋時不知道哪一版為準。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「戶型介紹頁和選屋範例表的坪數為什麼不同？哪一版是目前的規劃？B區（我家所在區）目前規劃的戶型與坪數清單能否提供？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "L3", "sev": "L", "type": "資訊正確性", "src": "簡報p.68", "plainTitle": "簡報範例算錯了 1 萬元", "proTitle": "超選範例金額計算錯誤", "plain": "<ul>\n<li><strong>白話說明</strong>：選屋範例多算了 1 萬元。金額不大，但代表<strong>他們給的數字要自己再算一次</strong>。</li>\n<li><strong>可以這樣問</strong>：「第 68 頁好像算錯了，正式選屋時可以給每一筆的計算明細嗎？」</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【簡報】p.68</li>\n<li><strong>為什麼是問題</strong>：算式用36,443,041元，前頁為36,433,041元，兩個超選總額各多算1萬元（簡報2,485,906元／2,314,906元，正確應為2,475,906元／2,304,906元）。金額小，但顯示試算資料需要逐項驗算。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「第68頁的超選金額似乎多算了1萬元，請確認正確數字。正式選屋時的找補計算，能否提供每一筆的計算明細？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "L4", "sev": "L", "type": "資訊正確性", "src": "簡報p.55", "plainTitle": "門牌寫法不一致", "proTitle": "門牌「一弄」與「3弄」不一致", "plain": "<ul>\n<li><strong>白話說明</strong>：福德街 84 巷，簡報一處寫「一弄」、另一處寫「三弄」。</li>\n<li><strong>可以這樣問</strong>：「到底是一弄還是三弄？」</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【簡報】p.55（文字寫福德街84巷一弄1號～8號，圖上標3弄各號）</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「A區範圍內福德街84巷的門牌是一弄還是三弄？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "L5", "sev": "L", "type": "建築／產品", "src": "契約第9條第4項", "plainTitle": "外觀和公設，實施者可以自己改", "proTitle": "外觀與公設可由實施者單方變更", "plain": "<ul>\n<li><strong>白話說明</strong>：大樓外觀、窗戶位置、公共設施，實施者可以自己改；我們想改室內格局，只能改一次，還要多付 10% 管理費。</li>\n<li><strong>可以這樣問</strong>：「公設如果有大改，會先通知我們嗎？」</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第9條第4項</li>\n<li><strong>為什麼是問題</strong>：外觀立面（含開窗位置、窗型）與公設規劃，實施者可直接變更；地主只能做一次室內格局變更，並加計10%管理費。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「公設規劃若有重大變更（例如減少公設項目、改變停車規劃），是否會通知地主並說明對權值的影響？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "L6", "sev": "L", "type": "建築／產品", "src": "契約第20條第2項", "plainTitle": "大樓第一屆管委會由實施者安排", "proTitle": "首屆管委會與住戶規約由實施者主導", "plain": "<ul>\n<li><strong>白話說明</strong>：管理公司、社區規約，一開始都由實施者決定，可能影響之後的管理費。</li>\n<li><strong>可以這樣問</strong>：「社區規約可以交屋前先給我們看嗎？」</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第20條第2項</li>\n<li><strong>為什麼是問題</strong>：管理公司、住戶規約、共有部分分管約定都由實施者規劃，地主「絕無異議」，可能影響日後管理費與共有空間使用。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「住戶規約與分管約定的草案能否在交屋前提供地主閱覽？實施者保留的戶數在首屆管委會中如何表決？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "L7", "sev": "L", "type": "建築／產品", "src": "簡報p.34；契約附件八", "plainTitle": "防震設備和冷氣", "proTitle": "制震系統形式未明；冷氣不含；多項「同等級」", "plain": "<ul>\n<li><strong>白話說明</strong>：簡報展示很多種防震裝置，合約只寫「日系制震系統」，沒說用哪一種；<strong>冷氣不含</strong>；很多建材寫「或同等級」，彈性很大。</li>\n<li><strong>可以這樣問</strong>：「確定用哪一種防震裝置？『同等級』是誰決定的？」</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【簡報】p.31～35（SC構造、阻尼器「可採用形式」）；【契約】第20條第4項、附件八</li>\n<li><strong>為什麼是問題</strong>：簡報展示多種阻尼器，契約只寫「日系制震系統」，沒有形式與數量；冷氣只預留套管；多數建材寫「或同等級」，彈性很大。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「本案確定採用哪一種制震裝置、設置在哪些樓層？『同等級』由誰認定？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "L8", "sev": "L", "type": "補貼／稅務", "src": "契約第6條", "plainTitle": "補貼的細節", "proTitle": "租金補貼的計算面積、所得申報、容移分享的給付時點", "plain": "<ul>\n<li><strong>白話說明</strong>：</li>\n<li>租金補貼：我們家約每月 37,500 元，要確認是用哪個面積算的。</li>\n<li>補貼要<strong>報所得稅</strong>。</li>\n<li>容積移轉分享約 91 萬元，要<strong>等交屋後</strong>才拿得到，可能是好幾年後。</li>\n<li><strong>可以這樣問</strong>：「我家每月租金補貼確切是多少？要怎麼報稅？容積移轉分享可以提早給一部分嗎？」</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第6條</li>\n<li><strong>為什麼是問題</strong>：</li>\n<li>租金補貼以「房屋謄本面積」計算，需確認是否含陽台等附屬建物（本戶約37.5坪，每月約37,500元）。</li>\n<li>第6條註明補貼「需依法申報所得」，可能影響個人所得稅。</li>\n<li>容積移轉分享（每坪8萬元，本戶約91.2萬元）與道路用地補貼，都要到交屋完成才給付，可能是多年後。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「租金補貼的計算面積是否包含附屬建物？以我家謄本計算每月是多少？補貼要以哪一類所得申報？容積移轉分享能否提前在開工時給付部分金額？」</p>\n</blockquote>\n</li>\n</ul>" }, { "id": "L9", "sev": "L", "type": "補貼／稅務", "src": "契約第13條", "plainTitle": "有房貸的話，要換到實施者指定的銀行", "proTitle": "原有房貸須轉貸至實施者指定銀行", "plain": "<ul>\n<li><strong>白話說明</strong>：如果房子還有貸款沒還完，要換到<strong>實施者指定的銀行</strong>，利率可能不一樣。</li>\n<li><strong>可以這樣問</strong>：「如果有房貸，可以繼續用原本的銀行嗎？指定銀行的利率是多少？」</li>\n</ul>", "pro": "<ul>\n<li><strong>出處</strong>：【契約】第13條第1項</li>\n<li><strong>為什麼是問題</strong>：地主原有銀行抵押權如不清償，需「配合轉貸至乙方指定之融資銀行」，可能影響利率與貸款條件。</li>\n<li><strong>怎麼問</strong>：<blockquote>\n<p>「如果地主有房貸，指定銀行的轉貸利率與條件是什麼？能否保留原銀行貸款？」</p>\n</blockquote>\n</li>\n</ul>" }];
+    const SEC = { H: "高嚴重度：簽約前一定要問清楚", M: "中嚴重度：很重要，要問", L: "低嚴重度：順便確認" };
+    const state = { sev: "all", view: "both", q: "" };
+    try { const v = localStorage.getItem("713view"); if (v) state.view = v; } catch (e) { }
+
+    const list = document.getElementById("list");
+    function render() {
+        const q = state.q.trim().toLowerCase();
+        const rows = DATA.filter(d => (state.sev === "all" || d.sev === state.sev) &&
+            (!q || (d.plainTitle + d.proTitle + d.plain + d.pro + d.type + d.src).toLowerCase().includes(q)));
+        document.getElementById("count").textContent = `顯示 ${rows.length} / ${DATA.length} 項`;
+        let out = "", last = "";
+        for (const d of rows) {
+            if (d.sev !== last) { out += `<h2 class="section"><i class="dot ${d.sev}"></i>${SEC[d.sev]}</h2>`; last = d.sev; }
+            out += `<article class="item ${d.sev}" id="${d.id}">
+      <div class="meta"><span class="id">${d.id}</span><span class="type">${d.type}</span></div>
+      <div class="col plain"><div class="tag">白話版</div><h3>${d.plainTitle}</h3>${d.plain}</div>
+      <div class="col pro"><div class="tag">專業版</div><h3>${d.proTitle}</h3>${d.pro}${d.src ? `<div class="src">出處：${d.src}</div>` : ""}</div>
+    </article>`;
+        }
+        list.innerHTML = out || `<p class="empty">找不到符合「${state.q}」的項目。</p>`;
+        list.querySelectorAll("blockquote").forEach(b => {
+            const btn = document.createElement("button"); btn.className = "copy"; btn.type = "button"; btn.textContent = "複製";
+            btn.addEventListener("click", () => {
+                const t = b.innerText.replace(/複製(成功)?$/, "").replace(/^[「]|[」]$/g, "").trim();
+                const done = () => { btn.textContent = "已複製"; setTimeout(() => btn.textContent = "複製", 1500); };
+                if (navigator.clipboard) { navigator.clipboard.writeText(t).then(done).catch(() => sel(b)); } else sel(b);
+            });
+            b.appendChild(btn);
+        });
+    }
+    function sel(el) { const r = document.createRange(); r.selectNodeContents(el.querySelector("p") || el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+    function applyView() {
+        document.body.classList.toggle("only-plain", state.view === "plain");
+        document.body.classList.toggle("only-pro", state.view === "pro");
+        document.querySelectorAll("#viewGroup .chip").forEach(c => c.setAttribute("aria-pressed", c.dataset.view === state.view));
+    }
+    document.querySelectorAll("#sevGroup .chip").forEach(c => c.addEventListener("click", () => {
+        state.sev = c.dataset.sev;
+        document.querySelectorAll("#sevGroup .chip").forEach(x => x.setAttribute("aria-pressed", x === c));
+        render();
+    }));
+    document.querySelectorAll("#viewGroup .chip").forEach(c => c.addEventListener("click", () => {
+        state.view = c.dataset.view; try { localStorage.setItem("713view", state.view); } catch (e) { } applyView();
+    }));
+    document.getElementById("q").addEventListener("input", e => { state.q = e.target.value; render(); });
+    applyView(); render();
+</script>
